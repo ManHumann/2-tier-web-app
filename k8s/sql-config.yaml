@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sql-config-map
+data:
+  MYSQL_DATABASE: "employees"
+  DBHOST: "sql-service"
+  DATABASE: "employees"
+  COLOR_FROM_ENV: "lime"
+  DBPORT: "3306"
