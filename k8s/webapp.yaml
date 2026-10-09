@@ -14,37 +14,46 @@ spec:
       labels:
         app: webapp
     spec:
+      initContainers:
+      - name: wait-for-sql
+        image: busybox:1.36
+        command: ['sh', '-c', 'until nc -z sql-service 3306; do echo waiting for mysql; sleep 2; done']
       containers:
       - name: webapp
         image: manhumann/2-tire-web-app:latest
         ports:
         - containerPort: 8080
         env:
-        - name: USER_NAME
+        - name: DBUSER
           valueFrom:
             secretKeyRef:
               name: secret-sql
               key: DBUSER
-        - name: USER_PWD
+        - name: DBPWD
           valueFrom:
             secretKeyRef:
               name: secret-sql
               key: DBPWD
-        - name: DB_URL
+        - name: DBHOST
           valueFrom:
             configMapKeyRef:
               name: sql-config-map
               key: DBHOST
-        - name: DB_PORT
+        - name: DBPORT
           valueFrom:
             configMapKeyRef:
               name: sql-config-map
               key: DBPORT
-        - name: DB_NAME
+        - name: DATABASE
           valueFrom:
             configMapKeyRef:
               name: sql-config-map
               key: DATABASE
+        - name: APP_COLOR
+          valueFrom:
+            configMapKeyRef:
+              name: sql-config-map
+              key: COLOR_FROM_ENV
 
 
 

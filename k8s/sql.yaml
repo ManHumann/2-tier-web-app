@@ -19,11 +19,16 @@ spec:
         image: mysql:8.0
         ports:
         - containerPort: 3306
+        readinessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 10
+          periodSeconds: 5
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: sql-secret
+              name: secret-sql
               key: MYSQL_ROOT_PASSWORD
 
         - name: MYSQL_DATABASE
@@ -31,6 +36,14 @@ spec:
             configMapKeyRef:
               name: sql-config-map
               key: MYSQL_DATABASE
+        volumeMounts:
+        - name: sql-init
+          mountPath: /docker-entrypoint-initdb.d/init.sql
+          subPath: init.sql
+      volumes:
+      - name: sql-init
+        configMap:
+          name: sql-config-map
 
     
 ---
